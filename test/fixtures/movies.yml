@@ -1,0 +1,19 @@
+the_dark_knight:
+  id: 1
+  title: The Dark Knight
+  subtitles: English, French, Spanish
+  studio: Warner Home Video
+  number_of_discs: 2
+  dvd_release_date: <%= DateTime.new 2008, 12, 9 %>
+  created_at: <%= Date.new 2009, 12, 12 %>
+  updated_at: <%= Date.new 2009, 12, 12 %>
+
+2001_space_odyssey:
+  id: 2
+  title: 2001 - A Space Odyssey
+  subtitles: English, Spanish, French
+  studio: Warner Home Video
+  number_of_discs: 1
+  dvd_release_date: <%= DateTime.new 2007, 10, 23 %>
+  created_at: <%= Date.new 2009, 11, 11 %>
+  updated_at: <%= Date.new 2009, 11, 11 %>

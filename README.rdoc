@@ -1,0 +1,148 @@
+= ToCSV
+
+global customization
+order
+
+ToCSV is a gem for converting arrays to CSV by calling +to_csv+.
+These arrays can contain different data structures, as long as they are homogeneous, like the ones
+described below:
+
+* A simple array of anything that responds to <tt>to_s</tt>: <tt>['Date', Time.now].to_csv</tt>
+* An array of hashes: <tt>[ {'Name' => 'Icaro', 'Age' => 23}, {'Name' => 'Gabriel', 'Age' => 16} ].to_csv</tt>
+* A matrix: <tt>[['Name', 'Age'], ['Icaro', 23], ['Gabriel', 16]].to_csv</tt>
+* A hash like array: <tt>[ [['Name', 'Icaro'], ['Age', 23]], [['Name', 'Gabriel'], ['Age', 16]] ].to_csv</tt>
+* An array of ActiveRecord objects: <tt>@users.to_csv(:except => [:password, :phone], :timestamps => true)</tt>
+
+=== Requirements
+
+You must have FasterCSV installed:
+  $ sudo gem install fastercsv
+  
+And also ActiveSupport:
+  $ sudo gem install active_support
+  
+ToCSV has been tested with Ruby 1.8.6/1.8.7. Soon I will fully test it under Ruby 1.9.
+
+
+=== Configuration
+
+  If you want to use this gem with Rails, put the following requirement in your environment.rb:
+  
+  config.gem 'to-csv', :lib => 'to_csv', :source => 'http://gemcutter.org'
+  
+After that, if you need to globally configure the gem, just create a <i>to_csv.rb</i> file in <i>initializers</i>.
+
+  ToCSV.byte_order_marker = true
+  ToCSV.timestamps = true
+  
+
+== Examples
+
+Let's start with the most simple example.
+
+  ['Alfred Hitchcock', 'Robert Mitchum', 'Lucille Ball'].to_csv
+  #=> "Alfred Hitchcock;Robert Mitchum;Lucille Ball\n"
+  
+
+Or, if we have an array of arrays (i.e. a matrix) we can create tabular data.
+  [
+    ['Name', 'Gender'],
+    ['Alfred',  'M'],
+    ['Robert',  'M'],
+    ['Lucille', 'F']
+  ].to_csv #=> "Name;Gender\nAlfred;M\nRobert;M\nLucille;F\n"
+  
+   
+Almost always, when we generate CSV files, we want it to have appropriate
+headers, so a better approach might be to use an array of hashes.
+
+  [
+    { 'Name' => 'Alfred',  'Gender' => 'M' },
+    { 'Name' => 'Robert',  'Gender' => 'M' },
+    { 'Name' => 'Lucille', 'Gender' => 'F' }
+  ].to_csv #=> "Gender;Name\nM;Alfred\nM;Robert\nF;Lucille\n"
+  
+
+Look carefully to the above output. You can see that when we use hashes we can
+no longer be sure of the headers' order. When we are working with tabular data 
+the headers' order can be very important, thus we can use a somewhat similar 
+data structure:
+
+  [
+    [ ['Name', 'Alfred'],  ['Gender', 'M'] ],
+    [ ['Name', 'Robert'],  ['Gender', 'M'] ],
+    [ ['Name', 'Lucille'], ['Gender', 'F'] ]
+  ].to_csv #=> "Name;Gender\nAlfred;M\nRobert;M\nLucille;F\n"
+
+That's a lot to type... The first example was much simpler...
+
+
+==== Active Record Objects
+
+When we're building our data like the previous examples we have very few options
+compared to what can be passed when converting an array of AR objects. Again,
+the easiest way:
+  
+  # Anywhere in your app
+  # By default, all available model attributes (DB columns) are going to be used
+  # except timestamps and the primary key of the record
+  @users = User.all
+  File.open('path/to/file.csv', 'w') { |io| io.puts @users.to_csv }
+  
+P.S.: By default the object attribute/method names will be sorted in alphabetical order.
+
+To build the header's row (always the first one) the plugin will try to find a
+translation in <tt>[:activerecord, :attributes, :model_name, :attribute]</tt>
+using your current locale. If that fails it will just humanize the attribute
+name.
+
+  # This makes use of a hash to completely change the CSV output.
+  @users.map do |user|
+    {
+      'Name' => user.name,
+      'Age' => user.age,
+      'Total Comments' => user.comments.count
+    }
+  end.to_csv
+  
+
+===== Passing a Block
+
+Sometimes you may want to change just one value out of six for example. The best
+way to go is to pass a block so that you don't have to repeat yourself writing
+five headers and it's obvious values and also loosing I18n translations.
+
+  # The block yields a new OpenStruct for each object in the list. By calling
+  # methods on this struct you can change their default values.
+  @users.to_csv do |csv, user|
+    csv.date_of_birth = user.date_of_birth.to_s(:long)
+  end
+  
+
+===== A Complete example
+
+  # index.html.haml
+  = link_to 'export (CSV)', users_url(:csv)
+
+  # index action in users controller
+  def index
+    @users = User.all
+    respond_to do |format|
+      format.html
+      format.csv { send_data @users.to_csv, :filename => 'users_report.csv' }
+    end
+  end
+  
+  
+==== Full Customization
+  
+You can always customize the output if you wish by building arrays of hashes,
+arrays of arrays of bidimensional arrays etc :). Or you can obviously mix
+anything you want and even use FasterCSV directly.
+
+  @user.to_csv { :only => [:name, :email] }, :col_sep => ','
+
+There are other options for you to customize the output. Take a look at the
+<tt>to_csv</tt> method documentation.
+
+Copyright (c) 2009 Ícaro Leopoldino da Motta, released under the MIT license.
