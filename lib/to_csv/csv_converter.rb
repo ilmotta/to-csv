@@ -4,9 +4,9 @@ module ToCSV
     def initialize(data, options = {}, csv_options = {}, &block)
       @opts = options.to_options.reverse_merge({
         :byte_order_marker => ToCSV.byte_order_marker,
+        :locale            => ToCSV.locale,
         :primary_key       => ToCSV.primary_key,
-        :timestamps        => ToCSV.timestamps,
-        :locale            => ::I18n.locale
+        :timestamps        => ToCSV.timestamps
       })
             
       @opts[:only]    = Array(@opts[:only]).map(&:to_s)

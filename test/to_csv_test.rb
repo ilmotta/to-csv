@@ -6,7 +6,9 @@ class ToCsvTest < ActiveRecordTestCase
   fixtures :movies
 
   def setup
+    ToCSV.byte_order_marker = ToCSV.locale = ToCSV.primary_key = ToCSV.timestamps = false
     @movies = Movie.all
+    @people = Person.all(:order => :name)
     store_translations('en-US', 'pt-BR')
   end
   
@@ -101,7 +103,6 @@ class ToCsvTest < ActiveRecordTestCase
   end
   
   def test_primary_key_option
-    @people = Person.all(:order => :name)
     assert_equal "Name\nGabriel\nIcaro\n", @people.to_csv
     assert_equal "Name\nGabriel\nIcaro\n", @people.to_csv(:primary_key => false)
     assert_equal "Name\nGabriel\nIcaro\n", @people.to_csv(:primary_key => nil)
@@ -118,6 +119,14 @@ class ToCsvTest < ActiveRecordTestCase
       csv.number_of_discs = "%02d" % movie.number_of_discs
     end
     assert_equal "Dvd release date;Number of discs;Studio;Subtitles;Title\nMon Dec 08 22:00:00 -0200 2008;02;Warner Home Video;English, French, Spanish;THE DARK KNIGHT\nMon Oct 22 22:00:00 -0200 2007;01;Warner Home Video;English, Spanish, French;2001 - A SPACE ODYSSEY\n", csv
+  end
+  
+  def test_default_settings
+    ToCSV.byte_order_marker = true
+    ToCSV.locale = 'pt-BR'
+    ToCSV.primary_key = true
+    ToCSV.timestamps = true
+    assert_equal "\xEF\xBB\xBFCreated at;Data de Lançamento do DVD;Id;Número de Discos;Studio;Legendas;Título;Updated at\nSat Dec 12 00:00:00 -0200 2009;Mon Dec 08 22:00:00 -0200 2008;1;2;Warner Home Video;English, French, Spanish;The Dark Knight;Sat Dec 12 00:00:00 -0200 2009\n", Array(@movies.first).to_csv
   end
     
   private
