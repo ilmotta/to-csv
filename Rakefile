@@ -14,6 +14,7 @@ spec = Gem::Specification.new do |s|
   s.platform = Gem::Platform::RUBY
   s.name = "to-csv"
   s.summary = s.description = "Convert arrays to CSV (array of hashes, matrixes, ActiveRecord objects etc)."
+  s.homepage = "http://github.com/ilmotta/to-csv"
   s.version = TO_CSV_VERSION
 
   s.add_dependency 'fastercsv'
