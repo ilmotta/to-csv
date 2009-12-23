@@ -7,6 +7,7 @@ class ToCsvTest < ActiveRecordTestCase
 
   def setup
     ToCSV.byte_order_marker = ToCSV.locale = ToCSV.primary_key = ToCSV.timestamps = false
+    ToCSV.csv_options = { :col_sep => ';' }
     @movies = Movie.all
     @people = Person.all(:order => :name)
     store_translations('en-US', 'pt-BR')
@@ -131,7 +132,8 @@ class ToCsvTest < ActiveRecordTestCase
     ToCSV.locale = 'pt-BR'
     ToCSV.primary_key = true
     ToCSV.timestamps = true
-    assert_equal "\xEF\xBB\xBFCreated at;Data de Lançamento do DVD;Id;Número de Discos;Studio;Legendas;Título;Updated at\nSat Dec 12 00:00:00 -0200 2009;Mon Dec 08 22:00:00 -0200 2008;1;2;Warner Home Video;English, French, Spanish;The Dark Knight;Sat Dec 12 00:00:00 -0200 2009\n", Array(@movies.first).to_csv
+    ToCSV.csv_options = { :col_sep => ',' }
+    assert_equal "\xEF\xBB\xBFCreated at,Data de Lançamento do DVD,Id,Número de Discos,Studio,Legendas,Título,Updated at\nSat Dec 12 00:00:00 -0200 2009,Mon Dec 08 22:00:00 -0200 2008,1,2,Warner Home Video,\"English, French, Spanish\",The Dark Knight,Sat Dec 12 00:00:00 -0200 2009\n", Array(@movies.first).to_csv
   end
 
   private
