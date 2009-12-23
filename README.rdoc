@@ -184,5 +184,5 @@ anything you want and even use FasterCSV directly.
 There are other options for you to customize the output. Take a look at the
 <tt>to_csv</tt> method documentation.
 
-Copyright (c) 2009 Õcaro Leopoldino da Motta, released under the MIT license.
+Copyright (c) 2009 √çcaro Leopoldino da Motta, released under the MIT license.
 
