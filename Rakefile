@@ -17,8 +17,10 @@ spec = Gem::Specification.new do |s|
   s.homepage = "http://github.com/ilmotta/to-csv"
   s.version = TO_CSV_VERSION
 
-  s.add_dependency 'fastercsv', '>= 1.5.0'
+  s.add_dependency 'fastercsv', '>= 1.5.0' if RUBY_VERSION < '1.9'
   s.add_dependency 'activesupport', '>= 2.3.5'
+  s.add_development_dependency 'activerecord', '>= 2.3.5'
+  s.add_development_dependency 'sqlite3-ruby', '>= 1.2.5'
 
   s.has_rdoc = true
   s.require_path = "lib"
