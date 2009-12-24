@@ -1,3 +1,5 @@
+#encoding: utf-8
+
 module ToCSV
 
   CSVClass = RUBY_VERSION < '1.9' ? ::FasterCSV : ::CSV
