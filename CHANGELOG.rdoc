@@ -1,3 +1,9 @@
+== 1.0.1 2009-12-24
+
+* Now compatible with Ruby 1.9.1
+* Updated documentation to reflect Ruby 1.9.1 support
+
 == 1.0.0 2009-12-23
 
 * First release
+

@@ -14,13 +14,10 @@ described below:
 
 === Requirements
 
-You must have FasterCSV installed:
-  $ sudo gem install fastercsv
+ToCSV has been tested with Ruby 1.8.6/1.8.7/1.9.1.
 
-And also ActiveSupport:
-  $ sudo gem install active_support
-
-ToCSV has been tested with Ruby 1.8.6/1.8.7.
+If you are using Ruby 1.9 the only dependency to use the basic features is +active_support+.
+Otherwise you will need +fastercsv+. These requirements are automatically installed for you.
 
 
 === Configuration
@@ -66,9 +63,9 @@ headers, so a better approach might be to use an array of hashes.
 
 
 Look carefully to the above output. You can see that when we use hashes we can
-no longer be sure of the headers' order. When we are working with tabular data
-the headers' order can be very important, thus we can use a somewhat similar
-data structure:
+no longer be sure of the headers' order (true for Ruby versions older than 1.9).
+When we are working with tabular data the headers' order can be very important,
+thus we can use a somewhat similar data structure:
 
   [
     [ ['Name', 'Alfred'],  ['Gender', 'M'] ],
