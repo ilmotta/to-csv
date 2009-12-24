@@ -16,8 +16,14 @@ described below:
 
 ToCSV has been tested with Ruby 1.8.6/1.8.7/1.9.1.
 
-If you are using Ruby 1.9 the only dependency to use the basic features is +active_support+.
-Otherwise you will need +fastercsv+. These requirements are automatically installed for you.
+If you are using Ruby 1.9 the only dependency to use the basic features is +ActiveSupport+.
+Otherwise you will need +fastercsv+. You will receive a warning if you don't meet the requirements.
+
+  # If you don't have Rails installed...
+  $ sudo gem install activesupport
+
+  # And if your Ruby version is lower than 1.9
+  $ sudo gem install fastercsv
 
 
 === Configuration
