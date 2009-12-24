@@ -1,4 +1,5 @@
 #encoding: utf-8
+
 require 'rubygems'
 require 'rake'
 require 'rake/clean'
@@ -12,6 +13,7 @@ spec = Gem::Specification.new do |s|
   s.author = "Ícaro Leopoldino da Motta"
   s.email = "icaro.ldm@gmail.com"
   s.platform = Gem::Platform::RUBY
+  s.required_ruby_version = '>= 1.8.6'
   s.name = "to-csv"
   s.summary = s.description = "Convert arrays to CSV (array of hashes, matrixes, ActiveRecord objects etc)."
   s.homepage = "http://github.com/ilmotta/to-csv"
