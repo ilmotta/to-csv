@@ -142,7 +142,7 @@ users to a hash. Example:
   @users.map do |user|
     {
       'Name' => user.name,
-      'Age' => user.age,
+      'Age'  => user.age,
       'Total Comments' => user.comments.count
     }
   end.to_csv
@@ -152,28 +152,48 @@ users to a hash. Example:
 
 Sometimes you may want to change just one value out of six for example. The best
 way to go is to pass a block so that you don't have to repeat yourself writing
-five headers and it's obvious values and also loosing I18n translations.
+five headers and it's obvious values and also loosing I18n header translations.
 
-  # The block yields a new OpenStruct for each object in the list. By calling
+  # The block yields a new Struct for each object in the list. By calling
   # methods on this struct you can change their default values.
-  @users.to_csv do |csv, user|
-    csv.date_of_birth = user.date_of_birth.to_s(:long)
+  @users.to_csv do |row, user|
+    row.date_of_birth = user.date_of_birth.to_s(:long)
   end
 
 
 ===== A More Complete Example
 
-  # index.html.haml
+  # users/index.html.haml
   = link_to 'export (CSV)', users_url(:csv)
 
-  # index action in users controller
-  def index
-    @users = User.all
-    respond_to do |format|
-      format.html
-      format.csv { send_data @users.to_csv, :filename => 'users_report.csv' }
+  # UsersController#index
+  class UsersController < ApplicationController
+    def index
+      @users = User.all(:order => :name)
+      respond_to do |format|
+        format.html
+        format.csv do
+          send_data User.csv(@users), :filename => 'users_report.csv'
+        end
+      end
     end
   end
+  
+  # User model
+  class User < ActiveRecord::Base
+    def self.csv(users)
+      users.csv(:headers => [:id, :all], :primary_key => true, :except => :password) do |row, user|
+        row.id = "%04d" % user.id
+        row.created_at = I18n.l(user.created_at, :format => :default)
+      end
+    end
+  end
+  
+  # locales/en-US.yml
+  activerecord:
+    attributes:
+      user:
+        id: Code
 
 
 ==== Full Customization
