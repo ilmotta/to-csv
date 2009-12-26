@@ -122,19 +122,26 @@ class ToCsvTest < ActiveRecordTestCase
   end
 
   def test_block_passed
-    csv = @movies.to_csv do |csv, movie|
-      csv.title = movie.title.upcase
-      csv.number_of_discs = "%02d" % movie.number_of_discs
+    csv = @movies.to_csv do |row, movie|
+      row.title           = movie.title.upcase
+      row.number_of_discs = "%02d" % movie.number_of_discs
     end
     assert_equal "Dvd release date;Number of discs;Studio;Subtitles;Title\n2008-12-08 22:00:00;02;Warner Home Video;English, French, Spanish;THE DARK KNIGHT\n2007-10-22 22:00:00;01;Warner Home Video;English, Spanish, French;2001 - A SPACE ODYSSEY\n", csv
+  
+    csv = @movies.to_csv(:headers => [:id, :all], :primary_key => true) do |row, movie|
+      row.id              = "%05d" % movie.id
+      row.title           = movie.title.upcase
+      row.number_of_discs = "%02d" % movie.number_of_discs
+    end
+    assert_equal "Id;Dvd release date;Number of discs;Studio;Subtitles;Title\n00001;2008-12-08 22:00:00;02;Warner Home Video;English, French, Spanish;THE DARK KNIGHT\n00002;2007-10-22 22:00:00;01;Warner Home Video;English, Spanish, French;2001 - A SPACE ODYSSEY\n", csv
   end
 
   def test_default_settings
     ToCSV.byte_order_marker = true
-    ToCSV.locale = 'pt-BR'
-    ToCSV.primary_key = true
-    ToCSV.timestamps = true
-    ToCSV.csv_options = { :col_sep => ',' }
+    ToCSV.locale            = 'pt-BR'
+    ToCSV.primary_key       = true
+    ToCSV.timestamps        = true
+    ToCSV.csv_options       = { :col_sep => ',' }
     assert_equal "\xEF\xBB\xBFCreated at,Data de Lançamento do DVD,Id,Número de Discos,Studio,Legendas,Título,Updated at\n2009-12-12 00:00:00,2008-12-08 22:00:00,1,2,Warner Home Video,\"English, French, Spanish\",The Dark Knight,2009-12-12 00:00:00\n", Array(@movies.first).to_csv
   end
 

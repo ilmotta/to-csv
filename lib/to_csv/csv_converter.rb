@@ -80,11 +80,10 @@ module ToCSV
         @header_row = human_attribute_names(attributes) if display_headers?
 
         @rows = if @block
+          attributes_class = Struct.new(*attributes.map(&:to_sym))
           @data.map do |item|
-            os = OpenStruct.new
-            @block.call(os, item)
-            marshal_dump = os.marshal_dump
-            attributes.map { |attribute| marshal_dump[attribute.to_sym] || try_formatting_date(item.send(attribute)) }
+            @block.call(obj = attributes_class.new, item)
+            attributes.map { |attribute| obj[attribute] || try_formatting_date(item.send(attribute)) }
           end
         else
           @data.map do |item|
