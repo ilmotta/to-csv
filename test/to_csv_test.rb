@@ -145,9 +145,11 @@ class ToCsvTest < ActiveRecordTestCase
     assert_equal "\xEF\xBB\xBFCreated at,Data de Lançamento do DVD,Id,Número de Discos,Studio,Legendas,Título,Updated at\n2009-12-12 00:00:00,2008-12-08 22:00:00,1,2,Warner Home Video,\"English, French, Spanish\",The Dark Knight,2009-12-12 00:00:00\n", Array(@movies.first).to_csv
   end
   
-  def test_named_scope_proxy
+  def test_scopes
     @movies = Movie.number_of_discs_gte(2)
     assert_equal "Title\nThe Dark Knight\n", @movies.to_csv(:only => :title)
+    @movies = Movie.dvd_release_date_lte(DateTime.new(2007, 12, 31))
+    assert_equal "Title\n2001 - A Space Odyssey\n", @movies.to_csv(:only => :title)
   end
 
   private
