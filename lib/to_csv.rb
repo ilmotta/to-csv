@@ -7,10 +7,7 @@ module ToCSV
   mattr_accessor :byte_order_marker, :locale, :primary_key, :timestamps
   mattr_accessor :csv_options
   self.csv_options = { :col_sep => ';' }
-end
-
-class Array
-
+  
   #
   # Returns a CSV string.
   #
@@ -57,3 +54,10 @@ class Array
   end
 end
 
+ActiveRecord::NamedScope::Scope.send(:include, ToCSV) if defined?(ActiveRecord::NamedScope::Scope)
+
+class Array
+  remove_method :to_csv
+  extend  ToCSV
+  include ToCSV
+end
