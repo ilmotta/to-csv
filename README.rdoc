@@ -1,7 +1,7 @@
 = ToCSV
 
 
-ToCSV is a gem for converting arrays to CSV by calling +to_csv+.
+ToCSV is a gem for converting arrays or scopes (Rails) to CSV by calling +to_csv+.
 These arrays can contain different data structures, as long as they are homogeneous, like the ones
 described below:
 
@@ -10,6 +10,7 @@ described below:
 * A matrix: <tt>[['Name', 'Age'], ['Icaro', 23], ['Gabriel', 16]].to_csv</tt>
 * A hash like array: <tt>[ [['Name', 'Icaro'], ['Age', 23]], [['Name', 'Gabriel'], ['Age', 16]] ].to_csv</tt>
 * An array of ActiveRecord objects: <tt>@users.to_csv(:except => [:password, :phone], :timestamps => true)</tt>
+* Scopes in Rails
 
 
 === Requirements
@@ -169,7 +170,7 @@ five headers and it's obvious values and also loosing I18n header translations.
   # UsersController#index
   class UsersController < ApplicationController
     def index
-      @users = User.all(:order => :name)
+      @users = User.most_active
       respond_to do |format|
         format.html
         format.csv do
