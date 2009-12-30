@@ -130,7 +130,7 @@ module ToCSV
       end
 
       def timestamps
-        %w[ created_at updated_at created_on updated_on ]
+        @timestamps ||= %w[ created_at updated_at created_on updated_on ]
       end
 
       def methods_filter(attributes)
