@@ -6,7 +6,7 @@ require 'rake/clean'
 require 'rake/gempackagetask'
 load 'test/tasks.rake'
 
-TO_CSV_VERSION = '1.0.1'
+TO_CSV_VERSION = '1.0.2'
 CLEAN.include('pkg')
 
 spec = Gem::Specification.new do |s|

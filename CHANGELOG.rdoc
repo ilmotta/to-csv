@@ -1,3 +1,9 @@
+== 1.0.2 2010-01-04
+
+* Changed use of OpenStruct in favor of Struct, which supports any attribute name. Now a block yields a Struct and the object itself
+* Support for Rails scopes
+* Improved documentation
+
 == 1.0.1 2009-12-24
 
 * Now compatible with Ruby 1.9.1
