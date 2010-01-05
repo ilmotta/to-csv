@@ -49,3 +49,4 @@ end
 task :build => [:clean, :repackage]
 
 task :default => :test
+
