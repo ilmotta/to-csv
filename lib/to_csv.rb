@@ -6,8 +6,12 @@ require 'to_csv/csv_converter'
 module ToCSV
   mattr_accessor :byte_order_marker, :locale, :primary_key, :timestamps
   mattr_accessor :csv_options
-  self.csv_options = { :col_sep => ';' }
-  
+
+  # Unfortunately, in Ruby 1.9, the CSV#generate method does not respect
+  # the encoding of the original data. Even though the input encoding was
+  # UTF-8, the output was ASCII.
+  self.csv_options = { :col_sep => ';', :encoding => 'UTF-8' }
+
   #
   # Returns a CSV string.
   #
@@ -61,3 +65,4 @@ class Array
   extend  ToCSV
   include ToCSV
 end
+

@@ -1,11 +1,10 @@
-#encoding: utf-8
+# encoding: UTF-8
 
 module ToCSV
 
   CSVClass = RUBY_VERSION < '1.9' ? ::FasterCSV : ::CSV
 
   class Converter
-
     def initialize(data, options = {}, csv_options = {}, &block)
       @opts = options.to_options.reverse_merge({
         :byte_order_marker => ToCSV.byte_order_marker,
@@ -30,12 +29,11 @@ module ToCSV
         csv << @header_row if @header_row.try(:any?)
         @rows.each { |row| csv << row }
       end
-
+      
       @opts[:byte_order_marker] ? "\xEF\xBB\xBF#{output}" : output
     end
 
     private
-
       def build_headers_and_rows
         send "headers_and_rows_from_#{ discover_data_type }"
       end
