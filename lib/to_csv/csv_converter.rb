@@ -29,7 +29,7 @@ module ToCSV
         csv << @header_row if @header_row.try(:any?)
         @rows.each { |row| csv << row }
       end
-      
+
       @opts[:byte_order_marker] ? "\xEF\xBB\xBF#{output}" : output
     end
 
@@ -75,8 +75,10 @@ module ToCSV
 
       def headers_and_rows_from_ar_object
         attributes = sort_attributes(filter_attributes(attribute_names))
-        @header_row = human_attribute_names(attributes) if display_headers?
-
+        if display_headers?
+          @header_row =  human_attribute_names(attributes)
+          @header_row |= human_attribute_names(headers_from_association_ar_object) if @opts[:include]
+        end
         @rows = if @block
           attributes_class = Struct.new(*attributes.map(&:to_sym))
           @data.map do |item|
@@ -85,9 +87,97 @@ module ToCSV
           end
         else
           @data.map do |item|
-            attributes.map { |attribute| try_formatting_date item.send(attribute) }
+            result = attributes.map { |attribute| try_formatting_date item.send(attribute) }
+            (result << rows_from_association_ar_object(item);result.flatten!) if @opts[:include] && @row_header_association
+            result
           end
         end
+      end
+
+      def headers_and_rows_from_association_ar_object(item)
+        associations = @opts[:include].kind_of?(Array) ? @opts[:include] : [@opts[:include]]
+        @header_association = []
+        associations.each do |association|
+          association = association.to_sym
+          case @data.first.class.reflect_on_association(association).macro
+            when :has_many, :has_and_belongs_to_many
+              records = @data.first.send(association).to_a
+              unless records.empty?
+                instance_variable_set("@row_header_association_for_#{association.to_s.gsub(':','')}", records.first.attribute_names.map(&:to_s))
+                @row_header_association = instance_variable_get("@row_header_association_for_#{association.to_s.gsub(':','')}")
+                (1..records.size).each do |record|
+                  @row_header_association.map do |header|
+                    @header_association << "#{association.to_s.gsub(':','')}_#{record}_#{header}"
+                  end
+                end
+                @row_header_association.map do |attribute|
+                  @result << try_formatting_date(record.send(attribute))
+                end
+              end
+            when :has_one, :belongs_to
+              instance_variable_set("@row_header_association_for_#{association.to_s.gsub(':','')}", @data.first.send(association).attribute_names.map(&:to_s))
+              @row_header_association = instance_variable_get("@row_header_association_for_#{association.to_s.gsub(':','')}")
+              @header_association << @data.first.send(association).attribute_names.map do |header|
+                "#{association.to_s.gsub(':','')}_#{header}"
+              end
+          end
+        end
+        @header_association.flatten
+      end
+
+      def rows_from_association_ar_object(item)
+        associations = @opts[:include].kind_of?(Array) ? @opts[:include] : [@opts[:include].to_sym]
+        @result = []
+        associations.each do |association|
+          @row_header_association = instance_variable_get("@row_header_association_for_#{association.to_s.gsub(':','')}")
+          association = association.to_sym
+          case item.class.reflect_on_association(association).macro
+            when :has_many, :has_and_belongs_to_many
+              records = item.send(association).to_a
+              unless records.empty?
+                records.collect do |record|
+                  @row_header_association.map do |attribute|
+                    @result << try_formatting_date(record.send(attribute))
+                  end
+                end
+              end
+            when :has_one, :belongs_to
+              if record = item.send(association)
+                @row_header_association.map do |attribute|
+                  @result <<  try_formatting_date(record.send(attribute))
+                end
+              end
+          end
+        end
+        @result.flatten
+      end
+
+      def headers_from_association_ar_object
+        associations = @opts[:include].kind_of?(Array) ? @opts[:include] : [@opts[:include]]
+        @header_association = []
+        associations.each do |association|
+          association = association.to_sym
+          case @data.first.class.reflect_on_association(association).macro
+            when :has_many, :has_and_belongs_to_many
+              records = @data.first.send(association).to_a
+              unless records.empty?
+                instance_variable_set("@row_header_association_for_#{association.to_s.gsub(':','')}", records.first.attribute_names.map(&:to_s))
+                @row_header_association = instance_variable_get("@row_header_association_for_#{association.to_s.gsub(':','')}")
+                (1..records.size).each do |record|
+                  @row_header_association.map do |header|
+                    @header_association << "#{association.to_s.gsub(':','')}_#{record}_#{header}"
+                  end
+                end
+              end
+            when :has_one, :belongs_to
+              instance_variable_set("@row_header_association_for_#{association.to_s.gsub(':','')}", @data.first.send(association).attribute_names.map(&:to_s))
+              @row_header_association = instance_variable_get("@row_header_association_for_#{association.to_s.gsub(':','')}")
+              @header_association << @data.first.send(association).attribute_names.map do |header|
+                "#{association.to_s.gsub(':','')}_#{header}"
+              end
+          end
+        end
+        @header_association.flatten
       end
 
       def display_headers?
