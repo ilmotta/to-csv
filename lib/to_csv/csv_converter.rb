@@ -20,6 +20,7 @@ module ToCSV
       @data = data
       @block = block
       @csv_options = csv_options.to_options.reverse_merge(ToCSV.csv_options)
+      @associations = @opts[:include].kind_of?(Array) ? @opts[:include] : [@opts[:include]] if @opts[:include]
     end
 
     def to_csv
@@ -95,10 +96,9 @@ module ToCSV
       end
 
       def rows_from_association_ar_object(item)
-        associations = @opts[:include].kind_of?(Array) ? @opts[:include] : [@opts[:include].to_sym]
         @result = []
-        associations.each do |association|
-          @row_header_association = instance_variable_get("@row_header_association_for_#{association.to_s.gsub(':','')}")
+        @associations.each do |association|
+          @row_header_association = instance_variable_get("@row_header_association_for_#{from_sym_to_string(association)}")
           association = association.to_sym
           case item.class.reflect_on_association(association).macro
             when :has_many, :has_and_belongs_to_many
@@ -122,27 +122,26 @@ module ToCSV
       end
 
       def headers_from_association_ar_object
-        associations = @opts[:include].kind_of?(Array) ? @opts[:include] : [@opts[:include]]
         @header_association = []
-        associations.each do |association|
+        @associations.each do |association|
           association = association.to_sym
           case @data.first.class.reflect_on_association(association).macro
             when :has_many, :has_and_belongs_to_many
               records = @data.first.send(association).to_a
               unless records.empty?
-                instance_variable_set("@row_header_association_for_#{association.to_s.gsub(':','')}", records.first.attribute_names.map(&:to_s))
-                @row_header_association = instance_variable_get("@row_header_association_for_#{association.to_s.gsub(':','')}")
+                instance_variable_set("@row_header_association_for_#{from_sym_to_string(association)}", records.first.attribute_names.map(&:to_s))
+                @row_header_association = instance_variable_get("@row_header_association_for_#{from_sym_to_string(association)}")
                 (1..records.size).each do |record|
                   @row_header_association.map do |header|
-                    @header_association << "#{association.to_s.gsub(':','')}_#{record}_#{header}"
+                    @header_association << "#{from_sym_to_string(association)}_#{record}_#{header}"
                   end
                 end
               end
             when :has_one, :belongs_to
-              instance_variable_set("@row_header_association_for_#{association.to_s.gsub(':','')}", @data.first.send(association).attribute_names.map(&:to_s))
-              @row_header_association = instance_variable_get("@row_header_association_for_#{association.to_s.gsub(':','')}")
-              @header_association << @data.first.send(association).attribute_names.map do |header|
-                "#{association.to_s.gsub(':','')}_#{header}"
+              instance_variable_set("@row_header_association_for_#{from_sym_to_string(association)}", @data.first.send(association).attribute_names.map(&:to_s))
+              @row_header_association = instance_variable_get("@row_header_association_for_#{from_sym_to_string(association)}")
+              @data.first.send(association).attribute_names.map do |header|
+                @header_association << "#{from_sym_to_string(association)}_#{header}"
               end
           end
         end
@@ -226,6 +225,11 @@ module ToCSV
           headers + (attributes - headers)
         end
       end
+
+      def from_sym_to_string(sym)
+        sym.to_s.gsub(':','')
+      end
+
   end
 end
 
