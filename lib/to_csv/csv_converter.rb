@@ -84,7 +84,9 @@ module ToCSV
           attributes_class = Struct.new(*attributes.map(&:to_sym))
           @data.map do |item|
             @block.call(obj = attributes_class.new, item)
-            attributes.map { |attribute| obj[attribute] || try_formatting_date(item.send(attribute)) }
+            result = attributes.map { |attribute| obj[attribute] || try_formatting_date(item.send(attribute)) }
+            (result << rows_from_association_ar_object(item);result.flatten!) if @opts[:include] && @row_header_association
+            result
           end
         else
           @data.map do |item|
