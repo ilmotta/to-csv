@@ -1,7 +1,9 @@
 icaro:
   cod: 1
   name: Icaro
-  
+  block_buster_id: 1
 gabriel:
   cod: 2
   name: Gabriel
+  block_buster_id: 1
+
