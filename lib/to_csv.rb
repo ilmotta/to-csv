@@ -7,7 +7,7 @@ require 'to_csv/csv_converter'
 module ToCSV
   mattr_accessor :byte_order_marker, :locale, :primary_key, :timestamps
   mattr_accessor :csv_options
-  self.csv_options = { :col_sep => ';' }
+  self.csv_options = { :col_sep => ';', :encoding => 'UTF-8' }
 
   #
   # Returns a CSV string.

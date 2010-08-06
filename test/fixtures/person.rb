@@ -3,4 +3,3 @@ class Person < ActiveRecord::Base
   belongs_to :block_buster
   set_primary_key :cod
 end
-

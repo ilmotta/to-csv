@@ -19,4 +19,3 @@ the_dark_knight:
   cod: 2
   created_at: <%= Date.new 2009, 11, 11 %>
   updated_at: <%= Date.new 2009, 11, 11 %>
-

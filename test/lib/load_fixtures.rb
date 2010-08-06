@@ -1,4 +1,4 @@
-require 'lib/activerecord_test_connector'
+require File.expand_path(File.join(File.dirname(__FILE__), 'activerecord_test_connector'))
 
 # setup the connection
 ActiveRecordTestConnector.setup

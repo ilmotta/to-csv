@@ -6,4 +6,3 @@ class Movie < ActiveRecord::Base
     scoped :conditions => ["dvd_release_date <= ?", date]
   end
 end
-

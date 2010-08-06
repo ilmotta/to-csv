@@ -1,8 +1,8 @@
 # encoding: UTF-8
 
 require 'test/unit'
-require 'test/lib/activerecord_test_case'
-require 'test/lib/load_fixtures'
+require File.expand_path(File.join(File.dirname(__FILE__), 'lib', 'activerecord_test_case'))
+require File.expand_path(File.join(File.dirname(__FILE__), 'lib', 'load_fixtures'))
 
 class ToCsvTest < ActiveRecordTestCase
   fixtures :movies
