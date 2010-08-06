@@ -1,7 +1,6 @@
 require RUBY_VERSION < '1.9' ? 'fastercsv' : 'csv'
 require 'ostruct'
-require 'active_record'
-require 'active_support'
+require 'active_support/core_ext'
 require 'to_csv/csv_converter'
 
 module ToCSV
