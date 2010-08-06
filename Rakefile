@@ -6,14 +6,14 @@ require 'rake/clean'
 require 'rake/gempackagetask'
 load 'test/tasks.rake'
 
-TO_CSV_VERSION = '1.0.2'
+TO_CSV_VERSION = '1.0.3'
 CLEAN.include('pkg')
 
 spec = Gem::Specification.new do |s|
   s.author = "Ícaro Leopoldino da Motta"
   s.email = "icaro.ldm@gmail.com"
   s.platform = Gem::Platform::RUBY
-  s.required_ruby_version = '>= 1.8.6'
+  s.required_ruby_version = '>= 1.8.7'
   s.name = "to-csv"
   s.summary = s.description = "Convert arrays to CSV (array of hashes, matrixes, ActiveRecord objects etc)."
   s.homepage = "http://github.com/ilmotta/to-csv"
