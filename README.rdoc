@@ -15,7 +15,7 @@ described below:
 
 === Requirements
 
-ToCSV has been tested with Ruby 1.8.6/1.8.7/1.9.1.
+ToCSV has been tested with Ruby 1.8.7-p299/1.9.1-p378/1.9.2-rc1.
 
 If you are using Ruby 1.9 the only dependency to use the basic features is +ActiveSupport+.
 Otherwise you will need +fastercsv+. You will receive a warning if you don't meet the requirements.
@@ -25,13 +25,15 @@ Otherwise you will need +fastercsv+. You will receive a warning if you don't mee
 
   # And if your Ruby version is lower than 1.9
   $ sudo gem install fastercsv
+  
+Full compatibility with Rails 3 is on the way...as well as a new API, with new features.
 
 
 === Configuration
 
   If you want to use this gem with Rails, put the following requirement in your environment.rb:
 
-  config.gem 'to-csv', :lib => 'to_csv', :source => 'http://gemcutter.org'
+  config.gem 'to-csv', :lib => 'to_csv', :source => 'http://rubygems.org'
 
 After that, if you need to globally configure the gem, just create a <i>to_csv.rb</i> file in <i>initializers</i>.
 
@@ -39,7 +41,8 @@ After that, if you need to globally configure the gem, just create a <i>to_csv.r
   ToCSV.timestamps        = true
   ToCSV.locale            = 'en-US'
   ToCSV.primary_key       = false
-  ToCSV.csv_options       = { :col_sep => ',', :row_sep => "\r\n" }
+  ToCSV.csv_options[:col_sep] = ','
+  ToCSV.csv_options[:row_sep] = "\r\n"
 
 
 == Examples
@@ -117,7 +120,7 @@ want to get the following output:
 
 You can tell <i>to-csv</i> to use a specific locale. If you don't, it uses
 your app current locale. It will try to translate attributes to a
-more friendly text by using the scope <tt>[:activerecord, :attributes, <model name>]</tt>.
+more friendly text by using the scope <tt>activerecord.attributes.<model name></tt>.
 If the translation doesn't exist the header's text is going to be humanized.
 
 The order of columns can be changed with the option +headers+. The way this
@@ -149,7 +152,7 @@ users to a hash. Example:
   end.to_csv
 
 
-===== Passing a Block
+==== Passing a Block
 
 Sometimes you may want to change just one value out of six for example. The best
 way to go is to pass a block so that you don't have to repeat yourself writing
@@ -161,8 +164,23 @@ five headers and it's obvious values and also loosing I18n header translations.
     row.date_of_birth = user.date_of_birth.to_s(:long)
   end
 
+==== Include Relationships
 
-===== A More Complete Example
+If you have an AR object with many relationships and you want to include these to
+CSV results, you can use :include option.
+
+Examples:
+
+  # If you want to include a <tt>has_many</tt> relationship, you can do the following:
+  User.all.to_csv(:include => :posts)
+
+  # If you want to include a <tt>belongs_to</tt> relationship:
+  User.all.to_csv(:include => :organization)
+
+  # Or you can use both in the same time.
+  User.all.to_csv(:include => [:organization, :posts])
+
+==== A More Complete Example
 
   # users/index.html.haml
   = link_to 'export (CSV)', users_url(:csv)
@@ -196,7 +214,6 @@ five headers and it's obvious values and also loosing I18n header translations.
       user:
         id: Code
 
-
 ==== Full Customization
 
 You can always customize the output if you wish by building arrays of hashes,
@@ -208,5 +225,13 @@ anything you want and even use FasterCSV directly.
 There are other options for you to customize the output. Take a look at the
 <tt>to_csv</tt> method documentation.
 
-Copyright (c) 2009 Ícaro Leopoldino da Motta, released under the MIT license.
+==== Credits
+
+Special thanks to these people for their contributions and/or ideas:
+
+* {Kyle J. Ginavan}[http://github.com/kylejginavan]
+* {Mauro Torres}[http://github.com/chebyte]
+* {petRUShka}[http://github.com/petRUShka]
+
+Copyright (c) 2010 Ícaro Leopoldino da Motta, released under the MIT license.
 

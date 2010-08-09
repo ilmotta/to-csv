@@ -1,5 +1,6 @@
-== 1.0.3 2010-08-06
+== 1.0.3 2010-08-09
 * Supported (tested) Ruby versions: 1.8.7-p299, 1.9.1-p378, 1.9.2-rc1
+* Support for Ruby 1.8.6 has been dropped
 * New +include+ option
 * +csv_options+ has an +encoding+ option set with UTF-8
 
