@@ -1,6 +1,6 @@
 = ToCSV
 
-*NOTICE: This project has been archived and it is no longer maintained.*
+== NOTICE: This project has been archived and it is no longer maintained.
 
 ToCSV is a gem for converting arrays or scopes (Rails) to CSV by calling +to_csv+.
 These arrays can contain different data structures, as long as they are homogeneous, like the ones
